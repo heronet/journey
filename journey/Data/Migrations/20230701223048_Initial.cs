@@ -33,6 +33,9 @@ namespace journey.Data.Migrations
                 columns: table => new
                 {
                     Id = table.Column<string>(type: "text", nullable: false),
+                    Name = table.Column<string>(type: "text", nullable: false),
+                    Location = table.Column<string>(type: "text", nullable: false),
+                    CreatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
                     UserName = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: true),
                     NormalizedUserName = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: true),
                     Email = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: true),
@@ -198,8 +201,8 @@ namespace journey.Data.Migrations
                 columns: new[] { "Id", "ConcurrencyStamp", "Name", "NormalizedName" },
                 values: new object[,]
                 {
-                    { "06c7401c-ca11-4522-9b90-08a683ca4f6d", null, "Admin", "ADMIN" },
-                    { "f524cdaa-9eb2-4b7b-a5a0-864053d74f5b", null, "Member", "MEMBER" }
+                    { "982bb2bd-7d13-439a-9f76-4c9cb7a5484f", null, "Member", "MEMBER" },
+                    { "b767a4d4-9d86-4975-87af-bf9688910b06", null, "Admin", "ADMIN" }
                 });
 
             migrationBuilder.CreateIndex(

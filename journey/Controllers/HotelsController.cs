@@ -79,6 +79,7 @@ public class HotelsController : CoreController
         var hotelDto = new HotelDto
         {
             Id = hotel.Id,
+            Title = hotel.Title,
             Location = hotel.Location,
             LocationOnMap = hotel.LocationOnMap
         };

@@ -5,7 +5,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace journey.Data;
 
-public class ApplicationDbContext : IdentityDbContext
+public class ApplicationDbContext : IdentityDbContext<User>
 {
     public ApplicationDbContext(DbContextOptions options) : base(options) { }
     public required DbSet<Hotel> Hotels { get; set; }

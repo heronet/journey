@@ -18,9 +18,11 @@ public class HotelsController : CoreController
 
     [HttpGet]
     [AllowAnonymous]
-    public async Task<ActionResult> GetHotels()
+    public async Task<ActionResult> GetHotels([FromQuery] string? location = null)
     {
-        var hotels = await _dbContext.Hotels.ToListAsync();
+        var hotels = await _dbContext.Hotels
+            .Where(h => location == null || h.Location.ToLower().Contains(location.ToLower()))
+            .ToListAsync();
         var hotelDtos = hotels.Select(h => HotelToDto(h));
         return Ok(hotelDtos);
     }

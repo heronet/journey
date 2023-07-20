@@ -1,18 +1,39 @@
 @baseUrl = http://localhost:5000/api
-@token = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1bmlxdWVfbmFtZSI6ImE2ZWNiYjc5LWQ1YzEtNGJkOS1hOGNiLWNkNTJkNzk3Mzc0NSIsIm5hbWVpZCI6IjMxNjg4NGM2LWQ4YzctNDhiZC05NzZkLTMxZWM3ZjUxYzcwZiIsInJvbGUiOiJNZW1iZXIiLCJuYmYiOjE2ODgyNTIyNjIsImV4cCI6MTY4ODUxMTQ2MiwiaWF0IjoxNjg4MjUyMjYyfQ.KARQXgLAnGAMVMN4JlNk4hq0EGHE_HJC1drP8VEi74w
+
+@token = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1bmlxdWVfbmFtZSI6ImZhNDlmMWU2LTc0Y2YtNDhlNS1iYjZiLTFkODliYWY4MDgwYyIsIm5hbWVpZCI6IjgzZjM1NzQxLWRlZWYtNGM2Yi1hMDc1LWU3ZGE2ZDA3NjY0NiIsInJvbGUiOiJNZW1iZXIiLCJuYmYiOjE2ODg1NzQwOTIsImV4cCI6MTY4ODgzMzI5MiwiaWF0IjoxNjg4NTc0MDkyfQ.089Qfz5JCaAA5CU2sGV9LYSEEKUNgzwLGZGH9CQXwdY
 
 # Get Hotel List
 GET {{baseUrl}}/hotels HTTP/1.1
 Authorization: Bearer {{token}}
 
-###
+### Add Hotel
 
 POST {{baseUrl}}/hotels HTTP/1.1
 content-Type: application/json
 Authorization: Bearer {{token}}
 
 {
-    "title": "Good Hotel",
+    "title": "Another Hotel 2",
     "location": "Sylhet",
     "locationOnMap": "https://goo.gl/maps/EyDBMbcJL6mLccbbA"
+}
+
+### Register
+POST {{baseUrl}}/account/register HTTP/1.1
+Content-Type: application/json
+
+{
+    "name": "Sirat",
+    "email": "x@x.com",
+    "password": "11111111"
+}
+
+### Login
+POST {{baseUrl}}/account/login HTTP/1.1
+Content-Type: application/json
+
+{
+    "name": "Sirat",
+    "email": "x@x.com",
+    "password": "11111111"
 }

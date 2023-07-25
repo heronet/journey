@@ -83,7 +83,10 @@ public class HotelsController : CoreController
             Id = hotel.Id,
             Title = hotel.Title,
             Location = hotel.Location,
-            LocationOnMap = hotel.LocationOnMap
+            LocationOnMap = hotel.LocationOnMap,
+            Description = hotel.Description,
+            Phone = hotel.Phone,
+            Email = hotel.Email
         };
         if (hotel.Rooms is not null)
             hotelDto.Rooms = hotel.Rooms.Select(r => RoomToDto(r)).ToList();

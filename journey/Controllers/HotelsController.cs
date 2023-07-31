@@ -43,6 +43,7 @@ public class HotelsController : CoreController
 
     }
     [HttpPost]
+    [Authorize(Roles = "SuperAdmin,Admin,Moderator")]
     public async Task<ActionResult> AddHotel(HotelDto hotelDto)
     {
         var hotel = hotelDto.ToHotel();

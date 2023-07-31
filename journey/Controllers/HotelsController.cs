@@ -1,7 +1,9 @@
+using System.Security.Claims;
 using journey.Data;
 using journey.Data.Dto;
 using journey.Models;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
@@ -11,8 +13,10 @@ namespace journey.Controllers;
 public class HotelsController : CoreController
 {
     private readonly ApplicationDbContext _dbContext;
-    public HotelsController(ApplicationDbContext dbContext)
+    private readonly UserManager<User> _userManager;
+    public HotelsController(ApplicationDbContext dbContext, UserManager<User> userManager)
     {
+        _userManager = userManager;
         _dbContext = dbContext;
     }
 
@@ -66,6 +70,26 @@ public class HotelsController : CoreController
         }
         return BadRequest(new { error = "Could not Add Room" });
     }
+    [HttpPost("rate")]
+    public async Task<ActionResult> RateHotel(RatingDto ratingDto)
+    {
+        var userId = User.FindFirst(ClaimTypes.NameIdentifier)!.Value;
+        var user = await _userManager.FindByIdAsync(userId);
+        if (user is null) return NotFound();
+        var hotel = await _dbContext.Hotels.FirstOrDefaultAsync(h => h.Id == ratingDto.HotelId);
+        if (hotel is null) return NotFound();
+        var rating = new Rating
+        {
+            Text = ratingDto.Text.Trim(),
+            Stars = ratingDto.Stars,
+            User = user,
+            UserName = user.Name
+        };
+        hotel.Ratings.Add(rating);
+        if (await _dbContext.SaveChangesAsync() > 0)
+            return Ok("Rating added succesfully");
+        return BadRequest("Rating failed");
+    }
     private RoomDto RoomToDto(Room room)
     {
         return new RoomDto
@@ -74,6 +98,14 @@ public class HotelsController : CoreController
             Catrgory = room.Catrgory,
             Price = room.Price,
             HotelId = room.HotelId
+        };
+    }
+    private RatingDto RatingToDto(Room room)
+    {
+        return new RatingDto
+        {
+            Id = room.Id,
+
         };
     }
     private HotelDto HotelToDto(Hotel hotel)

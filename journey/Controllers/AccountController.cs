@@ -50,6 +50,38 @@ public class AccountController : CoreController
         }
         return BadRequest("Can't add User");
     }
+
+    [HttpPost("add-member")]
+    public async Task<ActionResult<UserAuthDto>> AddMember(RegisterDto registerDto)
+    {
+        var User = new User
+        {
+            UserName = Guid.NewGuid().ToString(),
+            Email = registerDto.Email.ToLower().Trim(),
+            Name = registerDto.Name.Trim(),
+        };
+        var result = await _userManager.CreateAsync(User, password: registerDto.Password);
+        if (!result.Succeeded) return BadRequest(result);
+        var roleText = registerDto.Role.ToLower().Trim();
+
+        if (roleText == "member")
+            roleText = "Member";
+        else if (roleText == "moderator")
+            roleText = "Moderator";
+        else if (roleText == "admin")
+            roleText = "Admin";
+        else if (roleText == "superadmin")
+            roleText = "SuperAdmin";
+        else
+            return BadRequest("Invalid Role");
+        var addToRoleResult = await _userManager.AddToRoleAsync(User, roleText);
+        if (addToRoleResult.Succeeded)
+        {
+            var roles = await _userManager.GetRolesAsync(User);
+            return await UserToDto(User, roles.ToList());
+        }
+        return BadRequest("Can't add User");
+    }
     /// <summary>
     /// POST api/account/login
     /// </summary>

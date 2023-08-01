@@ -12,6 +12,7 @@ public class HotelDto
     public string Phone { get; set; } = string.Empty;
     public string Email { get; set; } = string.Empty;
     public List<RoomDto>? Rooms { get; set; }
+    public List<RatingDto>? Ratings { get; set; }
     public Hotel ToHotel()
     {
         return new Hotel

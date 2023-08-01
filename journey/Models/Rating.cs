@@ -10,5 +10,6 @@ namespace journey.Models
         public string UserName { get; set; } = string.Empty;
         public Hotel Hotel { get; set; } = null!;
         public Guid HotelId { get; set; }
+        public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
     }
 }

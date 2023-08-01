@@ -33,10 +33,11 @@ public class HotelsController : CoreController
 
     [HttpGet("{id}")]
     [AllowAnonymous]
-    public async Task<ActionResult> GetHotels(Guid id)
+    public async Task<ActionResult> GetHotel(Guid id)
     {
         var hotel = await _dbContext.Hotels
             .Include(h => h.Rooms)
+            .Include(h => h.Ratings.OrderByDescending(r => r.CreatedAt))
             .FirstOrDefaultAsync(h => h.Id == id);
         if (hotel is null) return BadRequest(new { error = "Hotel does not exist" });
         return Ok(HotelToDto(hotel));
@@ -88,7 +89,7 @@ public class HotelsController : CoreController
         };
         hotel.Ratings.Add(rating);
         if (await _dbContext.SaveChangesAsync() > 0)
-            return Ok("Rating added succesfully");
+            return Ok(RatingToDto(rating));
         return BadRequest("Rating failed");
     }
     private RoomDto RoomToDto(Room room)
@@ -101,12 +102,16 @@ public class HotelsController : CoreController
             HotelId = room.HotelId
         };
     }
-    private RatingDto RatingToDto(Room room)
+    private RatingDto RatingToDto(Rating rating)
     {
         return new RatingDto
         {
-            Id = room.Id,
-
+            Id = rating.Id,
+            UserId = rating.UserId,
+            UserName = rating.UserName,
+            Text = rating.Text,
+            Stars = rating.Stars,
+            HotelId = rating.HotelId
         };
     }
     private HotelDto HotelToDto(Hotel hotel)
@@ -123,6 +128,8 @@ public class HotelsController : CoreController
         };
         if (hotel.Rooms is not null)
             hotelDto.Rooms = hotel.Rooms.Select(r => RoomToDto(r)).ToList();
+        if (hotel.Ratings is not null)
+            hotelDto.Ratings = hotel.Ratings.Select(r => RatingToDto(r)).ToList();
         return hotelDto;
     }
 

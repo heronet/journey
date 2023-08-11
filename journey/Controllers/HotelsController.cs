@@ -40,6 +40,7 @@ public class HotelsController : CoreController
     {
         var hotel = await _dbContext.Hotels
             .Include(h => h.Rooms)
+            .Include(h => h.Photos)
             .Include(h => h.Ratings.OrderByDescending(r => r.CreatedAt))
             .AsSplitQuery()
             .FirstOrDefaultAsync(h => h.Id == id);
@@ -81,8 +82,10 @@ public class HotelsController : CoreController
             Email = hotelDto.Email,
             Phone = hotelDto.Phone,
             AddedBy = user.Name,
-            Photos = uploadedPhotos
+            Photos = uploadedPhotos,
         };
+        if (uploadedPhotos.Count > 0)
+            hotel.ThumbnailUrl = uploadedPhotos[0].ImageUrl;
         _dbContext.Hotels.Add(hotel);
         if (await _dbContext.SaveChangesAsync() > 0)
             return Ok(HotelToDto(hotel));
@@ -127,7 +130,23 @@ public class HotelsController : CoreController
             return Ok(RatingToDto(rating));
         return BadRequest("Rating failed");
     }
-    private RoomDto RoomToDto(Room room)
+    [HttpDelete]
+    [Authorize(Roles = "SuperAdmin,Admin,Moderator")]
+    public async Task<ActionResult> DeleteHotels()
+    {
+        var userId = User.FindFirst(ClaimTypes.NameIdentifier)!.Value;
+        var user = await _userManager.FindByIdAsync(userId);
+        if (user is null) return NotFound();
+
+        var hotels = await _dbContext.Hotels.ToListAsync();
+
+        _dbContext.RemoveRange(hotels);
+
+        if (await _dbContext.SaveChangesAsync() > 0)
+            return Ok();
+        return BadRequest("Failed to delete hotels");
+    }
+    private static RoomDto RoomToDto(Room room)
     {
         return new RoomDto
         {
@@ -137,7 +156,16 @@ public class HotelsController : CoreController
             HotelId = room.HotelId
         };
     }
-    private RatingDto RatingToDto(Rating rating)
+    private static PhotoDto PhotoToDto(Photo photo)
+    {
+        return new PhotoDto
+        {
+            Id = photo.Id,
+            ImageUrl = photo.ImageUrl,
+            PublicId = photo.PublicId
+        };
+    }
+    private static RatingDto RatingToDto(Rating rating)
     {
         return new RatingDto
         {
@@ -149,7 +177,7 @@ public class HotelsController : CoreController
             HotelId = rating.HotelId
         };
     }
-    private HotelDto HotelToDto(Hotel hotel)
+    private static HotelDto HotelToDto(Hotel hotel)
     {
         var hotelDto = new HotelDto
         {
@@ -159,12 +187,16 @@ public class HotelsController : CoreController
             LocationOnMap = hotel.LocationOnMap,
             Description = hotel.Description,
             Phone = hotel.Phone,
-            Email = hotel.Email
+            Email = hotel.Email,
+            ThumbnailUrl = hotel.ThumbnailUrl,
+            AddedBy = hotel.AddedBy
         };
         if (hotel.Rooms is not null)
             hotelDto.Rooms = hotel.Rooms.Select(r => RoomToDto(r)).ToList();
         if (hotel.Ratings is not null)
             hotelDto.Ratings = hotel.Ratings.Select(r => RatingToDto(r)).ToList();
+        if (hotel.Photos is not null)
+            hotelDto.Photos = hotel.Photos.Select(p => PhotoToDto(p)).ToList();
         return hotelDto;
     }
 

@@ -11,6 +11,9 @@ public class HotelDto
     public string Description { get; set; } = string.Empty;
     public string Phone { get; set; } = string.Empty;
     public string Email { get; set; } = string.Empty;
+    public string ThumbnailUrl { get; set; } = string.Empty;
+    public string AddedBy { get; set; } = string.Empty;
+
     public List<RoomDto>? Rooms { get; set; }
     public List<RatingDto>? Ratings { get; set; }
     public List<IFormFile> UploadPhotos { get; set; } = new List<IFormFile>();

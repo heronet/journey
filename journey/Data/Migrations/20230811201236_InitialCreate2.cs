@@ -9,7 +9,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace journey.Data.Migrations
 {
     /// <inheritdoc />
-    public partial class Initial : Migration
+    public partial class InitialCreate2 : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -63,7 +63,13 @@ namespace journey.Data.Migrations
                     Id = table.Column<Guid>(type: "uuid", nullable: false),
                     Title = table.Column<string>(type: "text", nullable: false),
                     Location = table.Column<string>(type: "text", nullable: false),
-                    LocationOnMap = table.Column<string>(type: "text", nullable: false)
+                    LocationOnMap = table.Column<string>(type: "text", nullable: false),
+                    Description = table.Column<string>(type: "text", nullable: false),
+                    Phone = table.Column<string>(type: "text", nullable: false),
+                    Email = table.Column<string>(type: "text", nullable: false),
+                    AddedBy = table.Column<string>(type: "text", nullable: false),
+                    ThumbnailUrl = table.Column<string>(type: "text", nullable: false),
+                    CreatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -177,7 +183,55 @@ namespace journey.Data.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "Rooms",
+                name: "Photo",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uuid", nullable: false),
+                    ImageUrl = table.Column<string>(type: "text", nullable: false),
+                    PublicId = table.Column<string>(type: "text", nullable: false),
+                    HotelId = table.Column<Guid>(type: "uuid", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Photo", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Photo_Hotels_HotelId",
+                        column: x => x.HotelId,
+                        principalTable: "Hotels",
+                        principalColumn: "Id");
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Rating",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uuid", nullable: false),
+                    Text = table.Column<string>(type: "text", nullable: false),
+                    Stars = table.Column<int>(type: "integer", nullable: false),
+                    UserId = table.Column<string>(type: "text", nullable: false),
+                    UserName = table.Column<string>(type: "text", nullable: false),
+                    HotelId = table.Column<Guid>(type: "uuid", nullable: false),
+                    CreatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Rating", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Rating_AspNetUsers_UserId",
+                        column: x => x.UserId,
+                        principalTable: "AspNetUsers",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_Rating_Hotels_HotelId",
+                        column: x => x.HotelId,
+                        principalTable: "Hotels",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Room",
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "uuid", nullable: false),
@@ -187,9 +241,9 @@ namespace journey.Data.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Rooms", x => x.Id);
+                    table.PrimaryKey("PK_Room", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_Rooms_Hotels_HotelId",
+                        name: "FK_Room_Hotels_HotelId",
                         column: x => x.HotelId,
                         principalTable: "Hotels",
                         principalColumn: "Id",
@@ -201,8 +255,10 @@ namespace journey.Data.Migrations
                 columns: new[] { "Id", "ConcurrencyStamp", "Name", "NormalizedName" },
                 values: new object[,]
                 {
-                    { "982bb2bd-7d13-439a-9f76-4c9cb7a5484f", null, "Member", "MEMBER" },
-                    { "b767a4d4-9d86-4975-87af-bf9688910b06", null, "Admin", "ADMIN" }
+                    { "115dd51e-07e2-42cb-8191-0a76a814595c", null, "Moderator", "MODERATOR" },
+                    { "453135bf-9d7f-4f9f-b93e-01466bf7ab77", null, "SuperAdmin", "SUPERADMIN" },
+                    { "4bd98ac5-7a27-4094-93f9-b18545a19f1b", null, "Member", "MEMBER" },
+                    { "6fe6317b-cdd7-474e-9f5d-92bbcfee656a", null, "Admin", "ADMIN" }
                 });
 
             migrationBuilder.CreateIndex(
@@ -243,8 +299,23 @@ namespace journey.Data.Migrations
                 unique: true);
 
             migrationBuilder.CreateIndex(
-                name: "IX_Rooms_HotelId",
-                table: "Rooms",
+                name: "IX_Photo_HotelId",
+                table: "Photo",
+                column: "HotelId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Rating_HotelId",
+                table: "Rating",
+                column: "HotelId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Rating_UserId",
+                table: "Rating",
+                column: "UserId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Room_HotelId",
+                table: "Room",
                 column: "HotelId");
         }
 
@@ -267,7 +338,13 @@ namespace journey.Data.Migrations
                 name: "AspNetUserTokens");
 
             migrationBuilder.DropTable(
-                name: "Rooms");
+                name: "Photo");
+
+            migrationBuilder.DropTable(
+                name: "Rating");
+
+            migrationBuilder.DropTable(
+                name: "Room");
 
             migrationBuilder.DropTable(
                 name: "AspNetRoles");

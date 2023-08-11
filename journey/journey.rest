@@ -1,6 +1,6 @@
 @baseUrl = http://localhost:5000/api
 
-@token = adkadkakdhsaiudhaiudhsaiudhaiuhduahdiuahduahfefe
+@token = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1bmlxdWVfbmFtZSI6Ijk1YjVhNDBlLWVjOTYtNGU1Ni05ZGUwLWI1NTNlYzRkNjY0YyIsIm5hbWVpZCI6ImNhZmZiZGEzLTZiMzEtNGIxMS1hNzEwLTc3NTEyM2IwOTdkMCIsIm5iZiI6MTY5MTc4MjU5MCwiZXhwIjoxNjkyMDQxNzkwLCJpYXQiOjE2OTE3ODI1OTB9.EseYaq5gBfGEhzCwpYkpll5adrtDPgvLtOeMgyURP7c
 
 # Get Hotel List
 GET {{baseUrl}}/hotels HTTP/1.1
@@ -24,9 +24,9 @@ Content-Type: application/json
 
 {
     "name": "Sirat",
-    "email": "x@a.com",
+    "email": "s@m.com",
     "password": "11111111",
-    "role": "Moderator"
+    "role": "Admin"
 }
 
 ### Register
@@ -45,6 +45,6 @@ Content-Type: application/json
 
 {
     "name": "Sirat",
-    "email": "@@@.com",
+    "email": "x@a.com",
     "password": "11111111"
 }

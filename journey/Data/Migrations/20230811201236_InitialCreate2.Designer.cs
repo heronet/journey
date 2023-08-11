@@ -12,8 +12,8 @@ using journey.Data;
 namespace journey.Data.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20230725175543_MoreHotelDetail")]
-    partial class MoreHotelDetail
+    [Migration("20230811201236_InitialCreate2")]
+    partial class InitialCreate2
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -53,15 +53,27 @@ namespace journey.Data.Migrations
                     b.HasData(
                         new
                         {
-                            Id = "616d0c18-064b-4dc1-890c-6e801f408e99",
+                            Id = "4bd98ac5-7a27-4094-93f9-b18545a19f1b",
                             Name = "Member",
                             NormalizedName = "MEMBER"
                         },
                         new
                         {
-                            Id = "f6e8c04c-8a8b-4449-ac3d-306caca3b481",
+                            Id = "115dd51e-07e2-42cb-8191-0a76a814595c",
+                            Name = "Moderator",
+                            NormalizedName = "MODERATOR"
+                        },
+                        new
+                        {
+                            Id = "6fe6317b-cdd7-474e-9f5d-92bbcfee656a",
                             Name = "Admin",
                             NormalizedName = "ADMIN"
+                        },
+                        new
+                        {
+                            Id = "453135bf-9d7f-4f9f-b93e-01466bf7ab77",
+                            Name = "SuperAdmin",
+                            NormalizedName = "SUPERADMIN"
                         });
                 });
 
@@ -177,6 +189,13 @@ namespace journey.Data.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uuid");
 
+                    b.Property<string>("AddedBy")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
                     b.Property<string>("Description")
                         .IsRequired()
                         .HasColumnType("text");
@@ -197,6 +216,10 @@ namespace journey.Data.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
+                    b.Property<string>("ThumbnailUrl")
+                        .IsRequired()
+                        .HasColumnType("text");
+
                     b.Property<string>("Title")
                         .IsRequired()
                         .HasColumnType("text");
@@ -204,6 +227,66 @@ namespace journey.Data.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Hotels");
+                });
+
+            modelBuilder.Entity("journey.Models.Photo", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid?>("HotelId")
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("ImageUrl")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("PublicId")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("HotelId");
+
+                    b.ToTable("Photo");
+                });
+
+            modelBuilder.Entity("journey.Models.Rating", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<Guid>("HotelId")
+                        .HasColumnType("uuid");
+
+                    b.Property<int>("Stars")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("Text")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("UserId")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("UserName")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("HotelId");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("Rating");
                 });
 
             modelBuilder.Entity("journey.Models.Room", b =>
@@ -226,7 +309,7 @@ namespace journey.Data.Migrations
 
                     b.HasIndex("HotelId");
 
-                    b.ToTable("Rooms");
+                    b.ToTable("Room");
                 });
 
             modelBuilder.Entity("journey.Models.User", b =>
@@ -355,6 +438,32 @@ namespace journey.Data.Migrations
                         .IsRequired();
                 });
 
+            modelBuilder.Entity("journey.Models.Photo", b =>
+                {
+                    b.HasOne("journey.Models.Hotel", null)
+                        .WithMany("Photos")
+                        .HasForeignKey("HotelId");
+                });
+
+            modelBuilder.Entity("journey.Models.Rating", b =>
+                {
+                    b.HasOne("journey.Models.Hotel", "Hotel")
+                        .WithMany("Ratings")
+                        .HasForeignKey("HotelId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("journey.Models.User", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Hotel");
+
+                    b.Navigation("User");
+                });
+
             modelBuilder.Entity("journey.Models.Room", b =>
                 {
                     b.HasOne("journey.Models.Hotel", "Hotel")
@@ -368,6 +477,10 @@ namespace journey.Data.Migrations
 
             modelBuilder.Entity("journey.Models.Hotel", b =>
                 {
+                    b.Navigation("Photos");
+
+                    b.Navigation("Ratings");
+
                     b.Navigation("Rooms");
                 });
 #pragma warning restore 612, 618

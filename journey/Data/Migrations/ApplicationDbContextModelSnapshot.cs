@@ -50,25 +50,25 @@ namespace journey.Data.Migrations
                     b.HasData(
                         new
                         {
-                            Id = "6c6249f0-567e-4066-9540-e6b8fc753c52",
+                            Id = "4bd98ac5-7a27-4094-93f9-b18545a19f1b",
                             Name = "Member",
                             NormalizedName = "MEMBER"
                         },
                         new
                         {
-                            Id = "11ddf460-00aa-4f47-aafc-9c39394517fb",
+                            Id = "115dd51e-07e2-42cb-8191-0a76a814595c",
                             Name = "Moderator",
                             NormalizedName = "MODERATOR"
                         },
                         new
                         {
-                            Id = "cdaaf9d9-4971-4095-afa3-fff1b975fdb5",
+                            Id = "6fe6317b-cdd7-474e-9f5d-92bbcfee656a",
                             Name = "Admin",
                             NormalizedName = "ADMIN"
                         },
                         new
                         {
-                            Id = "79223f0f-3dee-4554-a933-ed6a793c20b8",
+                            Id = "453135bf-9d7f-4f9f-b93e-01466bf7ab77",
                             Name = "SuperAdmin",
                             NormalizedName = "SUPERADMIN"
                         });
@@ -210,6 +210,10 @@ namespace journey.Data.Migrations
                         .HasColumnType("text");
 
                     b.Property<string>("Phone")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("ThumbnailUrl")
                         .IsRequired()
                         .HasColumnType("text");
 

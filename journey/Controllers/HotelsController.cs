@@ -2,6 +2,7 @@ using System.Security.Claims;
 using journey.Data;
 using journey.Data.Dto;
 using journey.Models;
+using journey.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -14,10 +15,12 @@ public class HotelsController : CoreController
 {
     private readonly ApplicationDbContext _dbContext;
     private readonly UserManager<User> _userManager;
-    public HotelsController(ApplicationDbContext dbContext, UserManager<User> userManager)
+    private readonly PhotoService _photoService;
+    public HotelsController(ApplicationDbContext dbContext, UserManager<User> userManager, PhotoService photoService)
     {
         _userManager = userManager;
         _dbContext = dbContext;
+        _photoService = photoService;
     }
 
     [HttpGet]
@@ -38,6 +41,7 @@ public class HotelsController : CoreController
         var hotel = await _dbContext.Hotels
             .Include(h => h.Rooms)
             .Include(h => h.Ratings.OrderByDescending(r => r.CreatedAt))
+            .AsSplitQuery()
             .FirstOrDefaultAsync(h => h.Id == id);
         if (hotel is null) return BadRequest(new { error = "Hotel does not exist" });
         return Ok(HotelToDto(hotel));
@@ -45,9 +49,40 @@ public class HotelsController : CoreController
     }
     [HttpPost]
     [Authorize(Roles = "SuperAdmin,Admin,Moderator")]
-    public async Task<ActionResult> AddHotel(HotelDto hotelDto)
+    public async Task<ActionResult> AddHotel([FromForm] HotelDto hotelDto)
     {
-        var hotel = hotelDto.ToHotel();
+        var userId = User.FindFirst(ClaimTypes.NameIdentifier)!.Value;
+        var user = await _userManager.Users
+            .FirstOrDefaultAsync(u => u.Id == userId);
+        if (user == null) return BadRequest("User does not exist");
+
+        // Photo upload
+        if (hotelDto.UploadPhotos.Count > 3)
+            return BadRequest("Can't add more than 3 photos");
+        var uploadedPhotos = new List<Photo>();
+        foreach (var photo in hotelDto.UploadPhotos)
+        {
+            var photoResult = await _photoService.AddPhotoAsync(photo);
+            if (photoResult.Error != null)
+                return BadRequest(photoResult.Error.Message);
+            var newPhoto = new Photo
+            {
+                ImageUrl = photoResult.SecureUrl.AbsoluteUri,
+                PublicId = photoResult.PublicId
+            };
+            uploadedPhotos.Add(newPhoto);
+        }
+        var hotel = new Hotel
+        {
+            Title = hotelDto.Title,
+            Location = hotelDto.Location,
+            LocationOnMap = hotelDto.LocationOnMap,
+            Description = hotelDto.Description,
+            Email = hotelDto.Email,
+            Phone = hotelDto.Phone,
+            AddedBy = user.Name,
+            Photos = uploadedPhotos
+        };
         _dbContext.Hotels.Add(hotel);
         if (await _dbContext.SaveChangesAsync() > 0)
             return Ok(HotelToDto(hotel));

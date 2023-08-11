@@ -13,16 +13,6 @@ public class HotelDto
     public string Email { get; set; } = string.Empty;
     public List<RoomDto>? Rooms { get; set; }
     public List<RatingDto>? Ratings { get; set; }
-    public Hotel ToHotel()
-    {
-        return new Hotel
-        {
-            Title = Title,
-            Location = Location,
-            LocationOnMap = LocationOnMap,
-            Description = Description,
-            Email = Email,
-            Phone = Phone
-        };
-    }
+    public List<IFormFile> UploadPhotos { get; set; } = new List<IFormFile>();
+    public List<PhotoDto>? Photos { get; set; }
 }

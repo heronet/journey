@@ -80,6 +80,7 @@ public static class ServiceExtensions
             };
         });
         services.AddScoped<TokenService>();
+        services.AddScoped<PhotoService>();
         services.AddCors(options =>
         {
             options.AddPolicy("any", policy =>

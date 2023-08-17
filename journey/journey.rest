@@ -1,6 +1,6 @@
 @baseUrl = http://localhost:5000/api
 
-@token = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1bmlxdWVfbmFtZSI6Ijk1YjVhNDBlLWVjOTYtNGU1Ni05ZGUwLWI1NTNlYzRkNjY0YyIsIm5hbWVpZCI6ImNhZmZiZGEzLTZiMzEtNGIxMS1hNzEwLTc3NTEyM2IwOTdkMCIsIm5iZiI6MTY5MTc4MjU5MCwiZXhwIjoxNjkyMDQxNzkwLCJpYXQiOjE2OTE3ODI1OTB9.EseYaq5gBfGEhzCwpYkpll5adrtDPgvLtOeMgyURP7c
+@token = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1bmlxdWVfbmFtZSI6IjM3YjA3MjZhLTgxYWYtNGNlYS1hMjdjLTI5MzE5YzAyNjAxYyIsIm5hbWVpZCI6IjUwM2Y3MDZlLTk5MjYtNGRkZS1iMWE4LWIwOTY0NjdmYWIwNyIsInJvbGUiOiJBZG1pbiIsIm5iZiI6MTY5MjMxMTMwMCwiZXhwIjoxNjkyNTcwNTAwLCJpYXQiOjE2OTIzMTEzMDB9.6rSFL_a6lrf7cKl2AFdACNICYObRJptsNSAVmUVMCLA
 
 # Get Hotel List
 GET {{baseUrl}}/hotels HTTP/1.1
@@ -17,6 +17,11 @@ Authorization: Bearer {{token}}
     "location": "Sylhet",
     "locationOnMap": "https://goo.gl/maps/EyDBMbcJL6mLccbbA"
 }
+### Delete Hotels
+
+DELETE {{baseUrl}}/hotels HTTP/1.1
+content-Type: application/json
+Authorization: Bearer {{token}}
 
 ### Add Member
 POST {{baseUrl}}/account/add-member HTTP/1.1
@@ -34,8 +39,8 @@ POST {{baseUrl}}/account/register HTTP/1.1
 Content-Type: application/json
 
 {
-    "name": "Sirat",
-    "email": "@@@.com",
+    "name": "Member",
+    "email": "s@mem.com",
     "password": "11111111"
 }
 
@@ -45,6 +50,6 @@ Content-Type: application/json
 
 {
     "name": "Sirat",
-    "email": "x@a.com",
+    "email": "s@a.com",
     "password": "11111111"
 }

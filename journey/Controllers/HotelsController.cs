@@ -138,13 +138,47 @@ public class HotelsController : CoreController
         var user = await _userManager.FindByIdAsync(userId);
         if (user is null) return NotFound();
 
-        var hotels = await _dbContext.Hotels.ToListAsync();
+        var hotels = await _dbContext.Hotels
+            .Include(h => h.Photos)
+            .ToListAsync();
+
+        foreach (var hotel in hotels)
+        {
+            foreach (var photo in hotel.Photos)
+            {
+                await _photoService.DeletePhotoAsync(photo.PublicId);
+            }
+        }
 
         _dbContext.RemoveRange(hotels);
 
         if (await _dbContext.SaveChangesAsync() > 0)
             return Ok();
         return BadRequest("Failed to delete hotels");
+    }
+    [HttpDelete("{id}")]
+    [Authorize(Roles = "SuperAdmin,Admin,Moderator")]
+    public async Task<ActionResult> DeleteHotel(Guid id)
+    {
+        var userId = User.FindFirst(ClaimTypes.NameIdentifier)!.Value;
+        var user = await _userManager.FindByIdAsync(userId);
+        if (user is null) return NotFound();
+
+        var hotel = await _dbContext.Hotels
+            .Include(h => h.Photos)
+            .FirstOrDefaultAsync(h => h.Id == id);
+        if (hotel is null) return BadRequest("Invalid Hotel ID");
+
+        foreach (var photo in hotel.Photos)
+        {
+            await _photoService.DeletePhotoAsync(photo.PublicId);
+        }
+
+        _dbContext.Hotels.Remove(hotel);
+
+        if (await _dbContext.SaveChangesAsync() > 0)
+            return Ok();
+        return BadRequest("Failed to delete hotel");
     }
     private static RoomDto RoomToDto(Room room)
     {

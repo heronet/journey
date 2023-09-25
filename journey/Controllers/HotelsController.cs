@@ -62,7 +62,6 @@ public class HotelsController : CoreController
             Title = hotelDto.Title,
             Location = hotelDto.Location,
             LocationOnMap = hotelDto.LocationOnMap,
-            Description = hotelDto.Description,
             Email = hotelDto.Email,
             Phone = hotelDto.Phone,
             AddedBy = user.Name,
@@ -114,9 +113,10 @@ public class HotelsController : CoreController
         var room = new Room
         {
             Price = roomDto.Price,
-            Catrgory = roomDto.Catrgory,
+            Category = roomDto.Category,
             Photos = uploadedPhotos,
-            AC = roomDto.AC
+            AC = roomDto.AC,
+            Description = roomDto.Description
         };
         hotel.Rooms.Add(room);
 
@@ -212,9 +212,10 @@ public class HotelsController : CoreController
         var roomDto = new RoomDto
         {
             Id = room.Id,
-            Catrgory = room.Catrgory,
+            Category = room.Category,
             Price = room.Price,
-            HotelId = room.HotelId
+            HotelId = room.HotelId,
+            Description = room.Description
         };
         if (room.Photos is not null)
             roomDto.Photos = room.Photos.Select(PhotoToDto).ToList();
@@ -249,7 +250,6 @@ public class HotelsController : CoreController
             Title = hotel.Title,
             Location = hotel.Location,
             LocationOnMap = hotel.LocationOnMap,
-            Description = hotel.Description,
             Phone = hotel.Phone,
             Email = hotel.Email,
             ThumbnailUrl = hotel.ThumbnailUrl,

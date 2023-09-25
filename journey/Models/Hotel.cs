@@ -14,5 +14,4 @@ public class Hotel
     public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
     public ICollection<Room> Rooms { get; set; } = new List<Room>();
     public ICollection<Rating> Ratings { get; set; } = new List<Rating>();
-    public ICollection<Photo> Photos { get; set; } = new List<Photo>();
 }

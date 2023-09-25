@@ -1,6 +1,6 @@
 @baseUrl = http://localhost:5000/api
 
-@token = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1bmlxdWVfbmFtZSI6IjM3YjA3MjZhLTgxYWYtNGNlYS1hMjdjLTI5MzE5YzAyNjAxYyIsIm5hbWVpZCI6IjUwM2Y3MDZlLTk5MjYtNGRkZS1iMWE4LWIwOTY0NjdmYWIwNyIsInJvbGUiOiJBZG1pbiIsIm5iZiI6MTY5MjMxMTMwMCwiZXhwIjoxNjkyNTcwNTAwLCJpYXQiOjE2OTIzMTEzMDB9.6rSFL_a6lrf7cKl2AFdACNICYObRJptsNSAVmUVMCLA
+@token = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1bmlxdWVfbmFtZSI6ImQwMGUzZWI4LTJhZDktNDE4Yi1iMTMyLTkxYmNiZjAyNmQzMyIsIm5hbWVpZCI6Ijc2ZWQ3NDMyLTlkN2YtNDA5Zi04NDQwLTgzZTJiMjk4ZjE0ZSIsInJvbGUiOiJBZG1pbiIsIm5iZiI6MTY5NDkzMDI2NywiZXhwIjoxNjk1MTg5NDY3LCJpYXQiOjE2OTQ5MzAyNjd9.wmPrJtoLYKwKSLb0CDJJt5n4ONhDu3mOjjYdVpuOr9M
 
 # Get Hotel List
 GET {{baseUrl}}/hotels HTTP/1.1
@@ -13,7 +13,7 @@ content-Type: application/json
 Authorization: Bearer {{token}}
 
 {
-    "title": "Another Hotel 2",
+    "title": "Grand Hotel",
     "location": "Sylhet",
     "locationOnMap": "https://goo.gl/maps/EyDBMbcJL6mLccbbA"
 }
@@ -29,7 +29,7 @@ Content-Type: application/json
 
 {
     "name": "Sirat",
-    "email": "s@m.com",
+    "email": "s@a.com",
     "password": "11111111",
     "role": "Admin"
 }

@@ -40,7 +40,7 @@ public class HotelsController : CoreController
     {
         var hotel = await _dbContext.Hotels
             .Include(h => h.Rooms)
-            .Include(h => h.Photos)
+            .ThenInclude(r => r.Photos)
             .Include(h => h.Ratings.OrderByDescending(r => r.CreatedAt))
             .AsSplitQuery()
             .FirstOrDefaultAsync(h => h.Id == id);
@@ -50,18 +50,50 @@ public class HotelsController : CoreController
     }
     [HttpPost]
     [Authorize(Roles = "SuperAdmin,Admin,Moderator")]
-    public async Task<ActionResult> AddHotel([FromForm] HotelDto hotelDto)
+    public async Task<ActionResult> AddHotel(HotelDto hotelDto)
     {
         var userId = User.FindFirst(ClaimTypes.NameIdentifier)!.Value;
         var user = await _userManager.Users
             .FirstOrDefaultAsync(u => u.Id == userId);
         if (user == null) return BadRequest("User does not exist");
 
+        var hotel = new Hotel
+        {
+            Title = hotelDto.Title,
+            Location = hotelDto.Location,
+            LocationOnMap = hotelDto.LocationOnMap,
+            Description = hotelDto.Description,
+            Email = hotelDto.Email,
+            Phone = hotelDto.Phone,
+            AddedBy = user.Name,
+        };
+
+        _dbContext.Hotels.Add(hotel);
+        if (await _dbContext.SaveChangesAsync() > 0)
+            return Ok(HotelToDto(hotel));
+        return BadRequest(new { error = "Could not Add Hotel" });
+    }
+    [HttpPost("add-room")]
+    [Authorize(Roles = "SuperAdmin,Admin,Moderator")]
+    public async Task<ActionResult> AddRoom([FromForm] RoomDto roomDto)
+    {
+        // Must be a valid user
+        var userId = User.FindFirst(ClaimTypes.NameIdentifier)!.Value;
+        var user = await _userManager.Users
+            .FirstOrDefaultAsync(u => u.Id == userId);
+        if (user == null) return BadRequest("User does not exist");
+
+        // Get the hotel
+        var hotel = await _dbContext.Hotels
+            .Include(h => h.Rooms)
+            .FirstOrDefaultAsync(h => h.Id == roomDto.HotelId);
+        if (hotel is null) return BadRequest(new { error = "Hotel does not exist" });
+
         // Photo upload
-        if (hotelDto.UploadPhotos.Count > 3)
+        if (roomDto.UploadPhotos.Count > 3)
             return BadRequest("Can't add more than 3 photos");
         var uploadedPhotos = new List<Photo>();
-        foreach (var photo in hotelDto.UploadPhotos)
+        foreach (var photo in roomDto.UploadPhotos)
         {
             var photoResult = await _photoService.AddPhotoAsync(photo);
             if (photoResult.Error != null)
@@ -73,37 +105,21 @@ public class HotelsController : CoreController
             };
             uploadedPhotos.Add(newPhoto);
         }
-        var hotel = new Hotel
-        {
-            Title = hotelDto.Title,
-            Location = hotelDto.Location,
-            LocationOnMap = hotelDto.LocationOnMap,
-            Description = hotelDto.Description,
-            Email = hotelDto.Email,
-            Phone = hotelDto.Phone,
-            AddedBy = user.Name,
-            Photos = uploadedPhotos,
-        };
+
+        // set the thumbnail to the room
         if (uploadedPhotos.Count > 0)
             hotel.ThumbnailUrl = uploadedPhotos[0].ImageUrl;
-        _dbContext.Hotels.Add(hotel);
-        if (await _dbContext.SaveChangesAsync() > 0)
-            return Ok(HotelToDto(hotel));
-        return BadRequest(new { error = "Could not Add Hotel" });
-    }
-    [HttpPost("add-room")]
-    public async Task<ActionResult> AddRoom(RoomDto roomDto)
-    {
+
+        // Create the room.
         var room = new Room
         {
             Price = roomDto.Price,
-            Catrgory = roomDto.Catrgory
+            Catrgory = roomDto.Catrgory,
+            Photos = uploadedPhotos,
+            AC = roomDto.AC
         };
-        var hotel = await _dbContext.Hotels
-            .Include(h => h.Rooms)
-            .FirstOrDefaultAsync(h => h.Id == roomDto.HotelId);
-        if (hotel is null) return BadRequest(new { error = "Hotel does not exist" });
         hotel.Rooms.Add(room);
+
         if (await _dbContext.SaveChangesAsync() > 0)
         {
             return Ok(RoomToDto(room));
@@ -130,6 +146,7 @@ public class HotelsController : CoreController
             return Ok(RatingToDto(rating));
         return BadRequest("Rating failed");
     }
+
     [HttpDelete]
     [Authorize(Roles = "SuperAdmin,Admin,Moderator")]
     public async Task<ActionResult> DeleteHotels()
@@ -139,14 +156,18 @@ public class HotelsController : CoreController
         if (user is null) return NotFound();
 
         var hotels = await _dbContext.Hotels
-            .Include(h => h.Photos)
+            .Include(h => h.Rooms)
+            .ThenInclude(r => r.Photos)
             .ToListAsync();
 
         foreach (var hotel in hotels)
         {
-            foreach (var photo in hotel.Photos)
+            foreach (var room in hotel.Rooms)
             {
-                await _photoService.DeletePhotoAsync(photo.PublicId);
+                foreach (var photo in room.Photos)
+                {
+                    await _photoService.DeletePhotoAsync(photo.PublicId);
+                }
             }
         }
 
@@ -156,6 +177,7 @@ public class HotelsController : CoreController
             return Ok();
         return BadRequest("Failed to delete hotels");
     }
+
     [HttpDelete("{id}")]
     [Authorize(Roles = "SuperAdmin,Admin,Moderator")]
     public async Task<ActionResult> DeleteHotel(Guid id)
@@ -165,13 +187,18 @@ public class HotelsController : CoreController
         if (user is null) return NotFound();
 
         var hotel = await _dbContext.Hotels
-            .Include(h => h.Photos)
+            .Include(h => h.Ratings)
+            .Include(h => h.Rooms)
+            .ThenInclude(r => r.Photos)
             .FirstOrDefaultAsync(h => h.Id == id);
         if (hotel is null) return BadRequest("Invalid Hotel ID");
 
-        foreach (var photo in hotel.Photos)
+        foreach (var room in hotel.Rooms)
         {
-            await _photoService.DeletePhotoAsync(photo.PublicId);
+            foreach (var photo in room.Photos)
+            {
+                await _photoService.DeletePhotoAsync(photo.PublicId);
+            }
         }
 
         _dbContext.Hotels.Remove(hotel);
@@ -182,13 +209,16 @@ public class HotelsController : CoreController
     }
     private static RoomDto RoomToDto(Room room)
     {
-        return new RoomDto
+        var roomDto = new RoomDto
         {
             Id = room.Id,
             Catrgory = room.Catrgory,
             Price = room.Price,
             HotelId = room.HotelId
         };
+        if (room.Photos is not null)
+            roomDto.Photos = room.Photos.Select(PhotoToDto).ToList();
+        return roomDto;
     }
     private static PhotoDto PhotoToDto(Photo photo)
     {
@@ -226,11 +256,9 @@ public class HotelsController : CoreController
             AddedBy = hotel.AddedBy
         };
         if (hotel.Rooms is not null)
-            hotelDto.Rooms = hotel.Rooms.Select(r => RoomToDto(r)).ToList();
+            hotelDto.Rooms = hotel.Rooms.Select(RoomToDto).ToList();
         if (hotel.Ratings is not null)
-            hotelDto.Ratings = hotel.Ratings.Select(r => RatingToDto(r)).ToList();
-        if (hotel.Photos is not null)
-            hotelDto.Photos = hotel.Photos.Select(p => PhotoToDto(p)).ToList();
+            hotelDto.Ratings = hotel.Ratings.Select(RatingToDto).ToList();
         return hotelDto;
     }
 

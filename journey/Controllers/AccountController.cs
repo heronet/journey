@@ -1,6 +1,7 @@
 using journey.Data.Dto;
 using journey.Models;
 using journey.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -51,6 +52,7 @@ public class AccountController : CoreController
         return BadRequest("Can't add User");
     }
 
+    [Authorize(Roles = "SuperAdmin")]
     [HttpPost("add-member")]
     public async Task<ActionResult<UserAuthDto>> AddMember(RegisterDto registerDto)
     {

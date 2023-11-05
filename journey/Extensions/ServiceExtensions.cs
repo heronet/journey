@@ -87,7 +87,10 @@ public static class ServiceExtensions
             {
                 policy.AllowAnyHeader()
                     .AllowAnyMethod()
-                    .WithOrigins(Environment.GetEnvironmentVariable("CORS_ORIGIN")!)
+                    .WithOrigins(
+                        Environment.GetEnvironmentVariable("CORS_ORIGIN_PRIMARY")!,
+                        Environment.GetEnvironmentVariable("CORS_ORIGIN_SECONDARY")!
+                    )
                     .AllowCredentials();
             });
         });

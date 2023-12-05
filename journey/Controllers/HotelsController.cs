@@ -159,6 +159,7 @@ public class HotelsController : CoreController
         var hotels = await _dbContext.Hotels
             .Include(h => h.Rooms)
             .ThenInclude(r => r.Photos)
+            .AsSplitQuery()
             .ToListAsync();
 
         foreach (var hotel in hotels)

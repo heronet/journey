@@ -18,7 +18,8 @@
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development",
         "JWT_SECRET": "RvIpLojtdSlWj5v0BgfmRWXTCM2AyaQ9nJQjYiePwHY=",
-        "CORS_ORIGIN": "http://0.0.0.0:4200",
+        "CORS_ORIGIN_PRIMARY": "http://0.0.0.0:4200",
+        "CORS_ORIGIN_SECONDARY": "http://0.0.0.0:4200",
         "DATABASE_URL": "postgres://sirat:secret@localhost:5432/journey"
       }
     },
@@ -31,7 +32,8 @@
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development",
         "JWT_SECRET": "RvIpLojtdSlWj5v0BgfmRWXTCM2AyaQ9nJQjYiePwHY=",
-        "CORS_ORIGIN": "http://0.0.0.0:4200",
+        "CORS_ORIGIN_PRIMARY": "http://0.0.0.0:4200",
+        "CORS_ORIGIN_SECONDARY": "http://0.0.0.0:4200",
         "DATABASE_URL": "postgres://sirat:secret@localhost:5432/journey"
       }
     },

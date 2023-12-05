@@ -1,6 +1,6 @@
 @baseUrl = http://localhost:5000/api
 
-@token = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1bmlxdWVfbmFtZSI6IjlkZGJiOTBlLTI2ZWUtNGI4YS1iZWE4LTUwYWY0NjMyY2FmMiIsIm5hbWVpZCI6IjZkYzE5Zjk1LWMzYzEtNDJhOC04MzlmLTZkZGI0ODNhMmJlYiIsInJvbGUiOiJBZG1pbiIsIm5iZiI6MTY5NTY0MTg1NiwiZXhwIjoxNjk1OTAxMDU2LCJpYXQiOjE2OTU2NDE4NTZ9.Bym-rZp5hZLZdCq9jkNAAHNy9Oocd6FlY-PK-dxaEvU
+@token = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1bmlxdWVfbmFtZSI6ImVmMDI4NDFmLTEzNjctNDRkYi05Y2RiLWM3ZmI1MjVlYmUzMyIsIm5hbWVpZCI6IjhkZjM4ODcxLTkyNmMtNDNiYy04YTMwLTI0ZWM1NjM1MDI2OSIsInJvbGUiOiJBZG1pbiIsIm5iZiI6MTcwMTgwODIwNywiZXhwIjoxNzAyMDY3NDA3LCJpYXQiOjE3MDE4MDgyMDd9.x2Hu3ZNCtQDriJPVGYIlBQwKXYIp4qiFyLYx2j9RHZs
 
 # Get Hotel List
 GET {{baseUrl}}/hotels HTTP/1.1
@@ -15,7 +15,8 @@ Authorization: Bearer {{token}}
 {
     "title": "Grand Hotel",
     "location": "Sylhet",
-    "locationOnMap": "https://goo.gl/maps/EyDBMbcJL6mLccbbA"
+    "locationOnMap": "https://goo.gl/maps/EyDBMbcJL6mLccbbA",
+    "description": "Good hotel"
 }
 ### Delete Hotels
 

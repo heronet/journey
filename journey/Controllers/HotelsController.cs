@@ -61,6 +61,7 @@ public class HotelsController : CoreController
         {
             Title = hotelDto.Title,
             Location = hotelDto.Location,
+            Description = hotelDto.Description,
             LocationOnMap = hotelDto.LocationOnMap,
             Email = hotelDto.Email,
             Phone = hotelDto.Phone,
@@ -249,6 +250,7 @@ public class HotelsController : CoreController
             Id = hotel.Id,
             Title = hotel.Title,
             Location = hotel.Location,
+            Description = hotel.Description,
             LocationOnMap = hotel.LocationOnMap,
             Phone = hotel.Phone,
             Email = hotel.Email,
